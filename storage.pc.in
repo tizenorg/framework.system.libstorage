@@ -1,0 +1,11 @@
+# Package Information for pkg-config
+prefix=@PREFIX@
+exec_prefix=@EXEC_PREFIX@
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
+
+Name: Storage library
+Description: Library to get storage information
+Version: @VERSION@
+Libs: -L${libdir} -lstorage
+Cflags: -I${includedir}
