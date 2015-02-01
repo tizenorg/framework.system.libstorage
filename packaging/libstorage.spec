@@ -8,6 +8,9 @@ Source0:    %{name}-%{version}.tar.gz
 Source1:    %{name}.manifest
 BuildRequires:  cmake
 BuildRequires:  pkgconfig(dlog)
+BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires:  pkgconfig(vconf)
+BuildRequires:  pkgconfig(glib-2.0)
 
 %description
 development package of library to get storage
@@ -44,6 +47,7 @@ cp -a %{SOURCE1} %{buildroot}%{_datadir}/
 
 %files
 %{_libdir}/*.so.*
+%{_libdir}/pkgconfig/libstorage.conf
 %{_datadir}/license/%{name}
 %manifest %{_datadir}/%{name}.manifest
 

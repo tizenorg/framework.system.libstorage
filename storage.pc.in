@@ -7,5 +7,6 @@ includedir=@INCLUDEDIR@
 Name: Storage library
 Description: Library to get storage information
 Version: @VERSION@
-Libs: -L${libdir} -lstorage
+Requires: @PC_REQUIRED@
+Libs: -L${libdir} -lstorage @PC_LDFLAGS@
 Cflags: -I${includedir}

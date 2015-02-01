@@ -23,9 +23,56 @@
 extern "C" {
 #endif
 
+#include "storage-expand.h"
+
 #ifndef API
 #define API __attribute__ ((visibility("default")))
 #endif
+
+#ifndef __WEAK__
+#define __WEAK__ __attribute__ ((weak))
+#endif
+
+#ifndef __CONSTRUCTOR__
+#define __CONSTRUCTOR__ __attribute__ ((constructor))
+#endif
+
+#ifndef __DESTRUCTOR__
+#define __DESTRUCTOR__ __attribute__ ((destructor))
+#endif
+
+enum storage_cb_type {
+	STORAGE_CALLBACK_STATE,
+	STORAGE_CALLBACK_MAX,
+};
+
+struct storage_cb_info {
+	int id;
+	storage_state_changed_cb state_cb;
+	void *user_data;
+};
+
+struct storage_ops {
+	storage_type_e type;
+	const char *(*root) (void);
+	int (*get_state) (void);
+	int (*get_space) (unsigned long long *total, unsigned long long *available);
+	int (*register_cb) (enum storage_cb_type type, struct storage_cb_info *info);
+	int (*unregister_cb) (enum storage_cb_type type, struct storage_cb_info *info);
+};
+
+#define STORAGE_OPS_REGISTER(st)	\
+static void __CONSTRUCTOR__ module_init(void)	\
+{	\
+	add_device(st);	\
+}	\
+static void __DESTRUCTOR__ module_exit(void)	\
+{	\
+	remove_device(st);	\
+}
+
+void add_device(const struct storage_ops *st);
+void remove_device(const struct storage_ops *st);
 
 #ifdef __cplusplus
 }

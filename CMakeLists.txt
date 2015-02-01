@@ -10,18 +10,19 @@ SET(VERSION 0.1)
 SET(INC_DIR include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/${INC_DIR})
 
+SET(dependents "dlog capi-base-common vconf glib-2.0")
+SET(pc_dependents "capi-base-common")
+
 INCLUDE(FindPkgConfig)
-pkg_check_modules(rpkgs REQUIRED dlog)
+pkg_check_modules(rpkgs REQUIRED ${dependents})
 
 FOREACH(flag ${rpkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
 ENDFOREACH(flag)
 
-SET(SRCS
-	src/storage.c)
-
 SET(HEADERS
-	include/storage.h)
+	include/storage.h
+	include/storage-expand.h)
 
 SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} -fvisibility=hidden")
 SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} -g")
@@ -31,6 +32,12 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CFLAGS}")
 ADD_DEFINITIONS("-D_FILE_OFFSET_BITS=64")
 ADD_DEFINITIONS("-DENABLE_STORAGE_DLOG")
 
+SET(SRCS
+	src/statvfs.c
+	src/storage.c
+	src/storage-internal.c
+	src/storage-sdcard.c)
+
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS} ${TARGET_SRCS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${rpkgs_LDFLAGS})
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SOVERSION ${VERSION})
@@ -38,6 +45,7 @@ INSTALL(TARGETS ${PROJECT_NAME} DESTINATION lib COMPONENT RuntimeLibraries)
 
 CONFIGURE_FILE(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/libstorage.conf DESTINATION lib/pkgconfig RENAME libstorage.conf)
 
 FOREACH(hfile ${HEADERS})
 	INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${hfile} DESTINATION include/${PROJECT_NAME})

@@ -15,6 +15,7 @@
  * licensee arising out of or related to this software.
  *
  */
+#include <tet_api.h>
 #include <storage.h>
 
 #define API_NAME_STORAGE_GET_INTERNAL_MEMORY_SIZE "storage_get_internal_memory_size"
