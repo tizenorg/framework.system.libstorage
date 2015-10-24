@@ -34,7 +34,7 @@
 
 #define MEMORY_STATUS_USR_PATH "/opt/usr"
 #define EXTERNAL_MEMORY_PATH   "/opt/storage/sdcard"
-#define STORAGE_CONF_FILE      "/usr/lib/pkgconfig/libstorage.conf"
+#define STORAGE_CONF_FILE      "/etc/storage/libstorage.conf"
 
 /* it's for 32bit file offset */
 struct statvfs_32 {
@@ -192,7 +192,7 @@ static int load_config(struct parse_result *result, void *user_data)
 	value = result->value;
 
 	if (info->check_size > 0 && check_size < 0)
-		check_size = (storage_info.total_size < info->check_size)? 1 : 0;
+		check_size = (storage_info.total_size < info->check_size) ? 1 : 0;
 	if (MATCH(name, "CHECK_SIZE"))
 		info->check_size = atoi(value);
 	else if (check_size == 0 && MATCH(name, "RESERVE"))
@@ -223,6 +223,8 @@ static int get_memory_size(const char *path, struct statvfs_32 *buf)
 	if (ret)
 		return -errno;
 
+	memset(buf, 0, sizeof(struct statvfs_32));
+
 	buf->f_bsize  = s.f_bsize;
 	buf->f_frsize = s.f_frsize;
 	buf->f_blocks = (unsigned long)s.f_blocks;
@@ -240,7 +242,7 @@ static int get_memory_size(const char *path, struct statvfs_32 *buf)
 
 API int storage_get_internal_memory_size(struct statvfs *buf)
 {
-	struct statvfs_32 temp = {0,};
+	struct statvfs_32 temp;
 	static unsigned long reserved = 0;
 	int ret;
 
@@ -250,7 +252,7 @@ API int storage_get_internal_memory_size(struct statvfs *buf)
 	}
 
 	ret = get_memory_size(MEMORY_STATUS_USR_PATH, &temp);
-	if (ret) {
+	if (ret || temp.f_bsize == 0) {
 		_E("fail to get memory size");
 		return -errno;
 	}
@@ -303,17 +305,17 @@ API int storage_get_internal_memory_size64(struct statvfs *buf)
 	return 0;
 }
 
-static int mount_check(const char* path)
+static int mount_check(const char *path)
 {
 	int ret = false;
-	struct mntent* mnt;
-	const char* table = "/etc/mtab";
-	FILE* fp;
+	struct mntent *mnt;
+	const char *table = "/etc/mtab";
+	FILE *fp;
 
 	fp = setmntent(table, "r");
 	if (!fp)
 		return ret;
-	while ((mnt=getmntent(fp))) {
+	while ((mnt = getmntent(fp))) {
 		if (!strcmp(mnt->mnt_dir, path)) {
 			ret = true;
 			break;
@@ -325,7 +327,7 @@ static int mount_check(const char* path)
 
 API int storage_get_external_memory_size(struct statvfs *buf)
 {
-	struct statvfs_32 temp = {0,};
+	struct statvfs_32 temp;
 	int ret;
 
 	_D("storage_get_external_memory_size");

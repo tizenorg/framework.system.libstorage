@@ -61,13 +61,11 @@ static int sdcard_get_space(unsigned long long *total, unsigned long long *avail
 {
 	storage_state_e state;
 	struct statvfs s;
-	int ret, t, a;
+	int ret;
+	unsigned long long t = 0, a = 0;
 
 	state = sdcard_get_state();
-	if (state < STORAGE_STATE_MOUNTED) {
-		t = 0;
-		a = 0;
-	} else {	/* if sdcard is mounted */
+	if (state >= STORAGE_STATE_MOUNTED) {
 #ifndef __USE_FILE_OFFSET64
 		ret = storage_get_external_memory_size(&s);
 #else
@@ -93,7 +91,7 @@ static const char *sdcard_get_root(void)
 	return SDCARD_PATH;
 }
 
-static void sdcard_state_cb(keynode_t* key, void* data)
+static void sdcard_state_cb(keynode_t *key, void *data)
 {
 	struct storage_cb_info *cb_info;
 	dd_list *elem;

@@ -3,7 +3,7 @@ Summary:    Library to get storage information
 Version:    0.1.0
 Release:    0
 Group:      System/Libraries
-License:    Apache-2.0
+License:    Apache License, Version 2.0
 Source0:    %{name}-%{version}.tar.gz
 Source1:    %{name}.manifest
 BuildRequires:  cmake
@@ -47,7 +47,7 @@ cp -a %{SOURCE1} %{buildroot}%{_datadir}/
 
 %files
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/libstorage.conf
+%{_sysconfdir}/storage/libstorage.conf
 %{_datadir}/license/%{name}
 %manifest %{_datadir}/%{name}.manifest
 

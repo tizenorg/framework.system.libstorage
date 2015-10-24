@@ -161,7 +161,8 @@ typedef enum
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
  *
  * @remarks The directory path may not exist, so you must make sure that it exists before using it.\n
- * If you want to access files or directories in internal storage, you must declare http://tizen.org/privilege/mediastorage.\n
+ * If you want to access files or directories in internal storage except #STORAGE_DIRECTORY_SYSTEM_RINGTONES, you must declare http://tizen.org/privilege/mediastorage.\n
+ * If you want to access files or directories in #STORAGE_DIRECTORY_SYSTEM_RINGTONES, you must declare %http://tizen.org/privilege/systemsettings.\n
  * If you want to access files or directories in external storage, you must declare http://tizen.org/privilege/externalstorage.\n
  * You must release @a path using free().
  *
